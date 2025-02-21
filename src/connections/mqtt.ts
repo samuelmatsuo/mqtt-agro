@@ -3,8 +3,6 @@ const mqtt = require("mqtt");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-
 export function connectionBroker() {
   const options: IClientOptions = {
     host: process.env.MQTT_BROKER_URL,
@@ -15,8 +13,8 @@ export function connectionBroker() {
   };
   const client = mqtt.connect(options);
 
-  client.once("connect", () => {
-    console.log("Connectado ao broker MQTT as");
+  client.on("connect", () => {
+    console.log("Connectado ao broker");
   });
 
   return client;

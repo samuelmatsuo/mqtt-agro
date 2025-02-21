@@ -1,18 +1,29 @@
-import { itsRaining, itsTemperature, itsHumidity } from "./asp64/sensors.js";
-import { mqttRain } from "./broker/rain.js";
-import { mqttTemperature } from "./broker/temperature.js";
-import { mqttHumidity } from "./broker/humidity.js";
-import { mqttLogs } from "./broker/logs.js";
+import { IPublishPacket } from "mqtt";
+import { connectionBroker } from "./connections/mqtt";
 
-setInterval(() => {
-  itsRaining();
-  mqttRain();
+const client = connectionBroker();
 
-  itsTemperature();
-  mqttTemperature();
-
-  itsHumidity();
-  mqttHumidity();
-
-  mqttLogs();
-}, 1 * 1000);
+client.subscribe("#", { qos: 1 });
+client.on(
+  "message",
+  (topic: string, payload: Buffer, packet: IPublishPacket) => {
+    if (topic === "iot.rain") {
+      console.log(payload.toString());
+    }
+    if (topic === "iot.temperature") {
+      console.log(payload.toString());
+    }
+    if (topic === "iot.humidity") {
+      console.log(payload.toString());
+    }
+    if (topic === "iot.gas") {
+      console.log(payload.toString());
+    }
+    if (topic === "iot.error") {
+      console.log(payload.toString());
+    }
+    if (topic === "iot.off") {
+      console.log(payload.toString());
+    }
+  }
+);
