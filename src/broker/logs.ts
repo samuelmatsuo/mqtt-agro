@@ -12,24 +12,18 @@ if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir);
 }
 
-export function mqttLogs() {
-  client.subscribe("iot.log", { qos: 2 });
+export function mqttLogs(topic: string, message: string) {
+  const currentTime = Date.now();
 
-  client.removeAllListeners("message");
+  if (currentTime - logStartTime > LOG_TIME_LIMIT || !currentLogFile) {
+    currentLogFile = createNewLogFile(topic);
+    logStartTime = currentTime;
+  }
 
-  client.on("message", (topic: string, message: string) => {
-    const currentTime = Date.now();
-
-    if (currentTime - logStartTime > LOG_TIME_LIMIT || !currentLogFile) {
-      currentLogFile = createNewLogFile(topic);
-      logStartTime = currentTime;
+  fs.appendFile(currentLogFile, message + "\n", (err) => {
+    if (err) {
+      console.error("Erro ao escrever no arquivo de log:", err);
     }
-
-    fs.appendFile(currentLogFile, message + "\n", (err) => {
-      if (err) {
-        console.error("Erro ao escrever no arquivo de log:", err);
-      }
-    });
   });
 }
 

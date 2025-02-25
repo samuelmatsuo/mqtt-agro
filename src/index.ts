@@ -1,5 +1,6 @@
 import { IPubcompPacket, IPublishPacket } from "mqtt";
 import { connectionBroker } from "./connections/mqtt";
+import { mqttLogs } from "./broker/logs";
 
 const client = connectionBroker();
 client.subscribe("#", { qos: 2 });
@@ -37,11 +38,7 @@ client.on(
         );
         break;
       case "iot.error":
-        console.log(
-          `Mensagem recebida: Tópico -> ${topic} | QoS -> ${
-            packet.qos
-          } | Payload -> ${payload.toString()}`
-        );
+        mqttLogs(topic, payload.toString());
         break;
       case "iot.off":
         break;
